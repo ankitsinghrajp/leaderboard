@@ -22,6 +22,6 @@ const claimHistorySchema = new mongoose.Schema({
       },
 });
 
-const ClaimHistory = mongoose.model('ClaimHistory',claimHistorySchema);
+const ClaimHistory =  mongoose.models.ClaimHistory || mongoose.model('ClaimHistory',claimHistorySchema);
 
 export default ClaimHistory;

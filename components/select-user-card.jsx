@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import calculateRanks from "@/lib/calculateRank";
 
 import {
   Card,
@@ -29,7 +29,7 @@ const SelectUserCard = () => {
         const res = await fetch("/api/users");
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
-        setUsers(data);
+        setUsers(calculateRanks(data));
       } catch (error) {
         console.error("Error loading users: ", error);
       } finally {
@@ -49,12 +49,10 @@ const SelectUserCard = () => {
         body: JSON.stringify({ name: newUserName }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to add user");
-      }
+      if (!res.ok) throw new Error("Failed to add user");
 
       const newUser = await res.json();
-      setUsers((prev) => [...prev, newUser]);
+      setUsers((prev) => calculateRanks([...prev, newUser]));
       setNewUserName("");
     } catch (error) {
       console.error("Failed to add user:", error);
@@ -67,50 +65,43 @@ const SelectUserCard = () => {
     try {
       const res = await fetch("/api/claim", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: selectedUserId }),
       });
 
-      if (!res.ok) {
-        console.log(res);
-        throw new Error("Failed to claim points");
-      }
+      if (!res.ok) throw new Error("Failed to claim points");
+
       const { user: updatedUser } = await res.json();
 
-      // Update user list  in ui and in leaderboard
+      // Trigger leaderboard refresh
       window.dispatchEvent(new Event("leaderboard-refresh"));
 
       setUsers((prev) =>
-        prev.map((u) => (u._id === updatedUser._id ? updatedUser : u))
+        calculateRanks(
+          prev.map((u) => (u._id === updatedUser._id ? updatedUser : u))
+        )
       );
     } catch (error) {
-        console.error("Claim failed:",error);
+      console.error("Claim failed:", error);
     }
   };
 
   return (
     <>
-      <Card
-        className={
-          "h-[500px] border-1 bg-[#09090b] border-gray-700 shadow-md shadow-green-500/10"
-        }
-      >
+      <Card className="h-[500px] border-1 bg-[#09090b] border-gray-700 shadow-md shadow-green-500/10">
         <CardHeader>
-          <CardTitle className={"w-full flex items-center gap-2"}>
+          <CardTitle className="w-full flex items-center gap-2">
             <Star className="h-7 w-7 text-emerald-500" />
             <h2 className="text-xl font-extrabold">Select User</h2>
           </CardTitle>
         </CardHeader>
+
         {loading ? (
-          <div className=" text-center h-[400px] p-4 text-emerald-600 font-semibold">
-            Loding Users...
+          <div className="text-center h-[400px] p-4 text-emerald-600 font-semibold">
+            Loading Users...
           </div>
         ) : (
-          <CardContent
-            className={"h-[400px]  overflow-y-scroll custom-scrollbar"}
-          >
+          <CardContent className="h-[400px] overflow-y-scroll custom-scrollbar">
             <ul className="py-3">
               {users.map((user) => {
                 const isSelected = selectedUserId === user._id;
@@ -135,17 +126,14 @@ const SelectUserCard = () => {
                       <div className="flex flex-col">
                         <span className="text-sm font-medium">{user.name}</span>
                         <div className="flex items-center gap-2">
-                          <Trophy className="text-orange-400 h-4 w-4 " />
+                          <Trophy className="text-orange-400 h-4 w-4" />
                           <span className="text-sm text-muted-foreground">
-                            {" "}
-                            Rank: #1
+                            Rank: #{user.rank}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="">
-                      <Badge variant={"outline"}>{user.totalPoints} pts</Badge>
-                    </div>
+                    <Badge variant="outline">{user.totalPoints} pts</Badge>
                   </li>
                 );
               })}
@@ -154,7 +142,6 @@ const SelectUserCard = () => {
         )}
 
         <CardFooter>
-          {/* Add user button is here */}
           <AddUserButton
             handleAddUser={handleAddUser}
             setNewUserName={setNewUserName}
@@ -163,26 +150,21 @@ const SelectUserCard = () => {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={"bg-[#09090b]"}>
+        <DialogContent className="bg-[#09090b]">
           <DialogHeader>
-            <DialogTitle className={"text-center"}>Selected User</DialogTitle>
+            <DialogTitle className="text-center">Selected User</DialogTitle>
             <div className="text-muted-foreground font-semibold text-center ml-2">
               {selectedUser?.name}
             </div>
             <div className="flex justify-center items-center">
-              <Badge
-                variant={"outline"}
-                className=" px-4 text-white font-semibold"
-              >
+              <Badge variant="outline" className="px-4 text-white font-semibold">
                 {selectedUser?.totalPoints} pts
               </Badge>
             </div>
           </DialogHeader>
           <Button
             onClick={handleClaimPoints}
-            className={
-              "py-5 bg-emerald-500 focus:outline-none focus:ring-0 focus:border-none cursor-pointer text-white shadow-lg shadow-emerald-500/10 hover:bg-emerald-600 animate-pulse"
-            }
+            className="py-5 bg-emerald-500 focus:outline-none focus:ring-0 focus:border-none cursor-pointer text-white shadow-lg shadow-emerald-500/10 hover:bg-emerald-600 animate-pulse"
           >
             <Award className="w-8 h-8" />
             <span>Claim Random Points (1-10)</span>
