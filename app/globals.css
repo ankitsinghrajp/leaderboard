@@ -120,3 +120,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar Styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #09090b; /* Match website background */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #10b981; /* Emerald-500 */
+  border-radius: 8px;
+  border: 2px solid #09090b; /* Creates padding around thumb */
+}
+
+/* Firefox support */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #09090b;
+}
+
