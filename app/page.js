@@ -6,7 +6,7 @@ export default function HOME(){
 
   return (
     <div className="container py-6 mx-auto">
-  <div className="grid grid-cols-1 px-10 md:px-2 gap-6 md:grid-cols-3">
+  <div className="grid grid-cols-1 px-5 md:px-2 gap-6 md:grid-cols-3">
     <div className="">
       <SelectUserCard/>
     </div>
