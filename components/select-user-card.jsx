@@ -12,16 +12,16 @@ import {
 import { Plus, Star, User } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import AddUserButton from "./add-user-button";
 
 const SelectUserCard = () => {
 
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newUserName, setNewUserName] = useState("");
 
 
     useEffect(()=>{
-
-   
     const fetchUsers = async ()=>{
 
         try {
@@ -37,10 +37,32 @@ const SelectUserCard = () => {
         }
 
      };
-
      fetchUsers();
-
     },[]);
+
+    const handleAddUser = async ()=>{
+        if(!newUserName.trim()) return;
+
+        try {
+            
+            const res = await fetch("/api/users",{
+                method: 'POST',
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({name: newUserName}),
+            })
+
+            if(!res.ok){
+                throw new Error("Failed to add user");
+            }
+
+            const newUser = await res.json();
+            setUsers(prev=> [...prev,newUser]);
+            setNewUserName("");
+
+        } catch (error) {
+            console.error("Failed to add user:",error);
+        }
+    };
 
   return (
     <Card className={'h-[500px] border-1 bg-[#09090b] border-gray-700 shadow-md shadow-green-500/10'}>
@@ -57,9 +79,9 @@ const SelectUserCard = () => {
       </div>:
       <CardContent className={'h-[400px]  overflow-y-scroll custom-scrollbar'}>
         <ul className="py-5">
-            {users.map((user)=>{
+            {users.map((user,index)=>{
 
-            return <li className="flex my-4 justify-between items-center border border-emerald-500/40 shadow-md shadow-emerald-500/10 px-3 py-3 rounded-md">
+            return <li key={index} className="flex my-4 justify-between items-center border border-emerald-500/40 shadow-md shadow-emerald-500/10 px-3 py-3 rounded-md">
                 <div className="flex items-center gap-2">
                     <div className="bg-emerald-500/80 p-2 rounded-full">
                        <User/>
@@ -81,12 +103,8 @@ const SelectUserCard = () => {
 }
 
       <CardFooter>
-        <Button variant={''} className={'w-full shadow-md text-white border border-gray-600 bg-[#09090b] shadow-black/20 cursor-pointer hover:bg-black/20'}>
-            <Plus className="w-10 h-10"/>
-            <h2 className="font-medium">
-            Add New User
-            </h2>
-        </Button>
+        {/* Add user button is here */}
+       <AddUserButton handleAddUser={handleAddUser} setNewUserName={setNewUserName}/>
       </CardFooter>
     </Card>
   );
