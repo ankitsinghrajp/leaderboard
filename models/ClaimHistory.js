@@ -18,7 +18,7 @@ const claimHistorySchema = new mongoose.Schema({
       },
       claimedAt:{
         type:Date,
-        default: Date.now(),
+        default: Date.now,
       },
 });
 
