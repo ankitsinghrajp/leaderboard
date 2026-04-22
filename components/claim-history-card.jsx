@@ -21,7 +21,7 @@ const ClaimHistoryCard = () => {
       const data = await res.json();
       setHistory(data);
     } catch (error) {
-      console.error("Error loading claim history:", error);
+      console.error("Error loading claim history");
     } finally {
       setLoading(false);
     }
