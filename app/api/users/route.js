@@ -14,7 +14,7 @@ export async function POST(req){
     const {name} = await req.json();
 
     if(!name){
-        return Response.json({message:"Name is required"},{status:400});
+        return NextResponse.json({message:"Name is required"},{status:400});
     }
 
     const user = await User.create({name, totalPoints:0});
