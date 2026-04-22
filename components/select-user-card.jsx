@@ -51,7 +51,7 @@ const SelectUserCard = () => {
 
       if (!res.ok) throw new Error("Failed to add user");
 
-      const newUser = await res.json();
+setNewUserName(DOMPurify.sanitize(user.name));
       setUsers((prev) => calculateRanks([...prev, newUser]));
       setNewUserName("");
     } catch (error) {

@@ -9,7 +9,7 @@ export async function POST(req) {
     await connectDb();
     const { userId } = await req.json();
 
-    if (!userId) {
+return new Response(JSON.stringify({ message: "User not found or invalid" }), { status: 404 });
       return new Response(JSON.stringify({ message: "User ID is required" }), {
         status: 400,
       });

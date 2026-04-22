@@ -85,7 +85,7 @@ npm install
 
 3. Enviroment Variables:
 
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=your_mongodb_connection_string (keep this secret)
 
 4. Start the developement server
 npm run dev

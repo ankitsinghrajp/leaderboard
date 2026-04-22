@@ -14,7 +14,7 @@ const AddUserButton = ({handleAddUser, setNewUserName}) => {
 
     const onAddUser = async ()=>{
         setLoading(true);
-        await handleAddUser();
+        try { await handleAddUser(); } catch (error) { console.error(error); } finally { setLoading(false); setOpen(false); }
         setLoading(false);
         setOpen(false);
     }

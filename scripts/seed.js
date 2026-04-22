@@ -14,7 +14,7 @@ const seedUsers = async () => {
     await User.deleteMany({});
     
     // Insert new users
-    const userDocs = users.map(name => ({ name }));
+    const userDocs = users.slice(0, 100).map(name => ({ name }));
     await User.insertMany(userDocs);
     
     console.log('✅ Database seeded with 10 users');
