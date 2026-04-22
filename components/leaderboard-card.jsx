@@ -37,7 +37,7 @@ const LeaderboardCard = () => {
       fetchUsers();
     };
 
-    window.addEventListener("leaderboard-refresh", refreshHandler);
+    window.removeEventListener("leaderboard-refresh", refreshHandler);
 
     return () => {
       window.removeEventListener("leaderboard-refresh", refreshHandler);
